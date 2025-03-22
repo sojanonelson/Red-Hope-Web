@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { Search } from 'lucide-react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, Tabs, TabsContent, TabsList, TabsTrigger } from '../components/component';
+import { Card, CardContent, CardHeader, CardTitle, Tabs, TabsContent, TabsList, TabsTrigger } from '../components/component';
 // import { Link } from 'react-router-dom';
 import Aboutdonation from '../components/Aboutdonation';
 import { Link } from 'react-router-dom';
@@ -194,48 +194,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Testimonials */}
-      <div className="bg-gray-50 py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-extrabold text-gray-900">Success Stories</h2>
-            <p className="mt-4 text-lg text-gray-500">See how our platform has helped save lives</p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <Card>
-              <CardHeader>
-                <div className="w-16 h-16 rounded-full bg-gray-300 mb-4"></div>
-                <CardTitle>Sarah Johnson</CardTitle>
-                <CardDescription>Blood Recipient</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p>"I needed a rare blood type for my emergency surgery. Within hours, I found a donor through this platform. Eternally grateful."</p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader>
-                <div className="w-16 h-16 rounded-full bg-gray-300 mb-4"></div>
-                <CardTitle>Michael Chen</CardTitle>
-                <CardDescription>Regular Donor</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p>"I've donated 12 times through this platform. The process is smooth, and knowing I'm directly helping someone in need is incredibly rewarding."</p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader>
-                <div className="w-16 h-16 rounded-full bg-gray-300 mb-4"></div>
-                <CardTitle>Dr. Patel</CardTitle>
-                <CardDescription>Hospital Partner</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p>"This platform has revolutionized our emergency response. We can quickly find blood donors when our supply is low during critical situations."</p>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </div>
+     
 
       {/* CTA section */}
       <div className="bg-red-600 py-12">

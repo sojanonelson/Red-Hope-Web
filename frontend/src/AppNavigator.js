@@ -10,6 +10,7 @@ import { RegisterScreen } from "./pages/Register";
 import PaymentScreen from "./pages/TestPayment";
 import ServiceHistory from "./pages/serviceHistory";
 import DonateBlood from "./pages/DonateBlood";
+import About from "./pages/about";
 
 // Notification service
 const NotificationService = {
@@ -125,6 +126,7 @@ function Layout() {
       
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/about" element={<About />} />
         <Route path="/login" element={<LoginScreen />} />
         <Route path="/register" element={<RegisterScreen />} />
         <Route path="/test" element={<PaymentScreen />} />

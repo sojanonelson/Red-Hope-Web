@@ -1,5 +1,5 @@
-import React  from "react";
-// import Donorgif from './Donorgif.gif';
+import React from "react";
+
 const bloodTypes = [
   {
     type: "A+",
@@ -43,68 +43,73 @@ const bloodTypes = [
   },
 ];
 
-
-
 const Aboutdonation = () => {
   return (
-
-    // .........main content start here.................
-    <div className="bg">
-      <h1 className="text-3xl font-bold font-mono text-center my-8 text-red-600  ">
+    <div className="bg px-4 py-6 max-w-full overflow-hidden">
+      <h1 className="text-2xl md:text-3xl font-bold font-mono text-center my-4 md:my-8 text-red-600">
         Learn About Donation
       </h1>
-      <div className="flex items-center justify-center">
-        <div className="w-1/2 pr-8">
+      
+      {/* Responsive container that stacks on mobile */}
+      <div className="flex flex-col md:flex-row items-center justify-center gap-6">
+        {/* Image section - full width on mobile, half on desktop */}
+        <div className="w-full md:w-1/2 flex justify-center mb-6 md:mb-0">
           <img
-            src={"https://cdni.iconscout.com/illustration/premium/thumb/people-donate-blood-to-charity-7820863-6207469.png"}
+            src="https://cdni.iconscout.com/illustration/premium/thumb/people-donate-blood-to-charity-7820863-6207469.png"
             alt="Blood Donor"
-            className="w-full h-full object-cover "
+            className="w-full max-w-sm md:max-w-full object-contain"
           />
-          {/* <img
-            src={Donorgif}
-            alt="Blood Donor"
-            className="w-full h-full object-cover transition duration-50 ease-in-out transform hover:scale-110"
-          /> */}
         </div>
-        <div className="w-1/2">
-          <table className="table-auto text-sm mb-2 ">
-            <thead className="bg-gray-100">
-              <tr>
-                <th className="p-2 border border-gray-300 text-center text-white bg-red-600 hover:bg-red-700">
-                  Blood Type
-                </th>
-                <th className="p-2 border border-gray-300 text-center text-black bg-red-600 hover:bg-red-700">
-                  Can Donate To
-                </th>
-                <th className="p-2 border border-gray-300 text-center text-black bg-red-600 hover:bg-red-700">
-                  Can Receive From
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {bloodTypes.map((donor) => (
-                <tr key={donor.bloodType}>
-                  <td className="p-2 border border-gray-900 text-gray-900 text-center font-bold font-serif">
-                    {donor.type}
-                  </td>
-                  <td className="p-2 border border-gray-950 text-gray-900 text-center font-bold font-serif">
-                    {donor.canDonateTo.join(", ")}
-                  </td>
-                  <td className="p-2 border border-gray-900 text-gray-900 text-center font-bold font-serif">
-                    {donor.canReceiveFrom.join(", ")}
-                  </td>
+        
+        {/* Table section - full width on mobile, half on desktop */}
+        <div className="w-full md:w-1/2 overflow-x-auto">
+          <div className="min-w-full inline-block align-middle">
+            <table className="min-w-full table-auto text-xs sm:text-sm mb-2 border-collapse">
+              <thead className="bg-gray-100">
+                <tr>
+                  <th className="p-1 sm:p-2 border border-gray-300 text-center text-white bg-red-600">
+                    Blood Type
+                  </th>
+                  <th className="p-1 sm:p-2 border border-gray-300 text-center text-white bg-red-600">
+                    Can Donate To
+                  </th>
+                  <th className="p-1 sm:p-2 border border-gray-300 text-center text-white bg-red-600">
+                    Can Receive From
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {bloodTypes.map((donor, index) => (
+                  <tr key={index}>
+                    <td className="p-1 sm:p-2 border border-gray-900 text-gray-900 text-center font-bold font-serif">
+                      {donor.type}
+                    </td>
+                    <td className="p-1 sm:p-2 border border-gray-950 text-gray-900 text-center font-serif">
+                      {donor.canDonateTo.join(", ")}
+                    </td>
+                    <td className="p-1 sm:p-2 border border-gray-900 text-gray-900 text-center font-serif">
+                      {donor.canReceiveFrom.join(", ")}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
+      
+      {/* Additional information section */}
+      <div className="mt-8 bg-red-50 p-4 rounded-lg shadow-sm mx-auto max-w-4xl">
+        <h2 className="text-lg md:text-xl font-bold text-red-600 mb-3">Why Donate Blood?</h2>
+        <ul className="list-disc list-inside space-y-2 text-gray-800">
+          <li>A single donation can save up to three lives</li>
+          <li>Blood cannot be manufactured – it can only come from generous donors</li>
+          <li>Every two seconds someone needs blood</li>
+          <li>Most donated red blood cells must be used within 42 days</li>
+        </ul>
+      </div>
     </div>
-    // .......,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,..main content start here...............................................
-
-    
   );
 };
 
 export default Aboutdonation;
-
