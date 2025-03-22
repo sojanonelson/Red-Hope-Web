@@ -4,9 +4,9 @@ import { loginUser } from '../services/authService'; // Ensure this path is corr
 
 export const LoginScreen = () => {
   const [formData, setFormData] = useState({
-    email: 'o@gmail.com',
-    password: '123456',
-    confirmPassword: '123456',
+    email: '',
+    password: '',
+    confirmPassword: '',
   });
 
   const [error, setError] = useState('');
