@@ -14,12 +14,13 @@ export const RegisterScreen = () => {
     email: '',
     password: '',
     confirmPassword: '',
-    bloodType: '',
+    bloodGroup: '',
     phone: '',
     city: '',
     state: '',
     pincode: '',
     upiId: '',
+    status:'available',
     adharNumber: '',
     role: ''
   });
@@ -269,9 +270,9 @@ export const RegisterScreen = () => {
                       <div>
                         <label htmlFor="bloodType" className="block text-xs font-medium text-gray-700 mb-1">Blood Type</label>
                         <select 
-                          id="bloodType"
-                          name="bloodType" 
-                          value={formData.bloodType} 
+                          id="bloodGroup"
+                          name="bloodGroup" 
+                          value={formData.bloodGroup} 
                           onChange={handleChange} 
                           required 
                           className="w-full p-2 text-sm border rounded-md focus:ring-red-500 focus:border-red-500"

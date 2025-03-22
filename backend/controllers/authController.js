@@ -8,7 +8,7 @@ exports.registerDonor = async (req, res) => {
     const { name, status, email, password,phone,pincode ,bloodGroup, state,adharnumber,upiID, city,price } = req.body;
 
     // Validate required fields
-    if (!bloodGroup || !status) {
+    if (!bloodGroup ) {
       return res.status(400).json({ msg: 'Blood group and status are required for donors.' });
     }
 
