@@ -1,0 +1,254 @@
+import React from 'react';
+
+import { Search } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, Tabs, TabsContent, TabsList, TabsTrigger } from '../components/component';
+// import { Link } from 'react-router-dom';
+import Aboutdonation from '../components/Aboutdonation';
+import { Link } from 'react-router-dom';
+
+
+export default function Home() {
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Navigation */}
+      <nav className="bg-white shadow">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between h-16">
+            {/* <div className="flex items-center">
+              <div className="flex-shrink-0 flex items-center">
+                <div className="w-8 h-8 rounded-full bg-red-600 mr-2"></div>
+                <span className="font-bold text-xl text-red-600">Red Hope</span>
+              </div>
+              <div className="hidden md:ml-10 md:flex md:space-x-8">
+                <Link to='/' className="border-b-2 border-red-500 text-gray-900 px-1 pt-5 pb-3 text-sm font-medium">
+                  Home
+                </Link>
+                <Link to='/search-donor' className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 px-1 pt-5 pb-3 text-sm font-medium">
+                  Find Donors
+                </Link>
+                <a href="donor" className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 px-1 pt-5 pb-3 text-sm font-medium">
+                  Become a Donor
+                </a>
+                <a href="about" className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 px-1 pt-5 pb-3 text-sm font-medium">
+                  About Us
+                </a>
+              </div>
+            </div> */}
+            {/* <div className="flex items-center gap-4">
+              <button variant="outline" className="hidden md:block">Log in</button>
+              <button className="bg-red-600 hover:bg-red-700 text-white">Sign up</button>
+            </div> */}
+          </div>
+        </div>
+      </nav>
+
+      {/* Hero sectic f fn */}
+      <div className="relative bg-white overflow-hidden">
+        <div className="max-w-7xl mx-auto">
+          <div className="relative z-10 bg-white md:pb-20 lg:w-full lg:max-w-2xl">
+            <div className="mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-16 sm:pt-24 sm:pb-24 lg:pt-32">
+              <div className="text-center lg:text-left">
+                <h1 className="text-4xl font-extrabold tracking-tight text-gray-900 sm:text-5xl md:text-6xl">
+                  <span className="block">Save Lives with</span>
+                  <span className="block text-red-600">Blood Donation</span>
+                </h1>
+                <p className="mt-3 text-base text-gray-500 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto lg:mx-0">
+                  Connect with blood donors in your area. Find the blood type you need or help others by donating. Every donation can save up to three lives.
+                </p>
+               
+                <div className="mt-5 sm:mt-8 sm:flex sm:justify-center lg:justify-start gap-4">
+                <Link to='/register' state={{ userType: 'recipient' }}>
+                <button className="px-8 py-6 bg-red-600 hover:bg-red-700 text-white">I Need Blood</button></Link>
+                <Link to='/register' state={{ userType: 'donor' }}><button variant="outline" className="px-8 py-6">Become a Donor</button></Link>
+                 
+                  
+                </div>
+               
+               
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="lg:absolute lg:inset-y-0 lg:right-0 lg:w-1/2 bg-red-100">
+          <div className="h-full w-full flex items-center justify-center">
+            <div className="w-32 h-32 rounded-full bg-red-500 opacity-80"></div>
+          </div>
+        </div>
+      </div>
+
+      {/* Search section */}
+      <div className="bg-white py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="shadow-lg rounded-lg p-6 bg-white">
+            <h2 className="text-2xl font-bold mb-4 text-center">Find Blood Donors Near You</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="relative">
+                <select className="block w-full rounded-md border border-gray-300 py-2 px-3 focus:outline-none focus:ring-red-500 focus:border-red-500">
+                  <option>Select Blood Type</option>
+                  <option>A+</option>
+                  <option>A-</option>
+                  <option>B+</option>
+                  <option>B-</option>
+                  <option>AB+</option>
+                  <option>AB-</option>
+                  <option>O+</option>
+                  <option>O-</option>
+                </select>
+              </div>
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="Enter location"
+                  className="block w-full rounded-md border border-gray-300 py-2 px-3 focus:outline-none focus:ring-red-500 focus:border-red-500"
+                />
+              </div>
+              <button className="bg-red-600 hover:bg-red-700 text-white flex items-center justify-center gap-2">
+                <Search size={16} />
+                Search Donors
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Stats section */}
+
+      <Aboutdonation/>
+
+      {/* How it works section */}
+      <div className="bg-white py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-extrabold text-gray-900">How It Works</h2>
+            <p className="mt-4 text-lg text-gray-500">Simple steps to donate or receive blood</p>
+          </div>
+
+          <Tabs defaultValue="need" className="w-full">
+            <TabsList className="grid w-full grid-cols-2 mb-8">
+              <TabsTrigger value="need">I Need Blood</TabsTrigger>
+              <TabsTrigger value="donate">I Want to Donate</TabsTrigger>
+            </TabsList>
+            <TabsContent value="need">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <Card>
+                  <CardHeader>
+                    <div className="w-12 h-12 rounded-full bg-red-100 text-red-600 flex items-center justify-center mb-4">1</div>
+                    <CardTitle>Register</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p>Create an account and complete your profile with all necessary details</p>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardHeader>
+                    <div className="w-12 h-12 rounded-full bg-red-100 text-red-600 flex items-center justify-center mb-4">2</div>
+                    <CardTitle>Search</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p>Search for donors matching your blood type requirements and location</p>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardHeader>
+                    <div className="w-12 h-12 rounded-full bg-red-100 text-red-600 flex items-center justify-center mb-4">3</div>
+                    <CardTitle>Connect</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p>Contact donors directly through our secure messaging system</p>
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent>
+            <TabsContent value="donate">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <Card>
+                  <CardHeader>
+                    <div className="w-12 h-12 rounded-full bg-red-100 text-red-600 flex items-center justify-center mb-4">1</div>
+                    <CardTitle>Register</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p>Create your donor profile with blood type and contact information</p>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardHeader>
+                    <div className="w-12 h-12 rounded-full bg-red-100 text-red-600 flex items-center justify-center mb-4">2</div>
+                    <CardTitle>Verify</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p>Complete health screening and verification process for donor approval</p>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardHeader>
+                    <div className="w-12 h-12 rounded-full bg-red-100 text-red-600 flex items-center justify-center mb-4">3</div>
+                    <CardTitle>Donate</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p>Respond to donation requests and help save lives</p>
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent>
+          </Tabs>
+        </div>
+      </div>
+
+      {/* Testimonials */}
+      <div className="bg-gray-50 py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-extrabold text-gray-900">Success Stories</h2>
+            <p className="mt-4 text-lg text-gray-500">See how our platform has helped save lives</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <Card>
+              <CardHeader>
+                <div className="w-16 h-16 rounded-full bg-gray-300 mb-4"></div>
+                <CardTitle>Sarah Johnson</CardTitle>
+                <CardDescription>Blood Recipient</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p>"I needed a rare blood type for my emergency surgery. Within hours, I found a donor through this platform. Eternally grateful."</p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader>
+                <div className="w-16 h-16 rounded-full bg-gray-300 mb-4"></div>
+                <CardTitle>Michael Chen</CardTitle>
+                <CardDescription>Regular Donor</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p>"I've donated 12 times through this platform. The process is smooth, and knowing I'm directly helping someone in need is incredibly rewarding."</p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader>
+                <div className="w-16 h-16 rounded-full bg-gray-300 mb-4"></div>
+                <CardTitle>Dr. Patel</CardTitle>
+                <CardDescription>Hospital Partner</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p>"This platform has revolutionized our emergency response. We can quickly find blood donors when our supply is low during critical situations."</p>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </div>
+
+      {/* CTA section */}
+      <div className="bg-red-600 py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-3xl font-extrabold text-white">Ready to Make a Difference?</h2>
+          <p className="mt-4 text-xl text-red-100">Join our community of donors and help save lives today</p>
+          <div className="mt-8 flex justify-center gap-4">
+            <button className="bg-white text-red-600 hover:bg-red-50">Register as Donor</button>
+            <button variant="outline" className="text-white border-white hover:bg-red-700">Find Donors</button>
+          </div>
+        </div>
+      </div>
+
+
+</div>
+  )}
