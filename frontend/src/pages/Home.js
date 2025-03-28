@@ -1,10 +1,8 @@
 import React from 'react';
-
-import { Search } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, Tabs, TabsContent, TabsList, TabsTrigger } from '../components/component';
-// import { Link } from 'react-router-dom';
 import Aboutdonation from '../components/Aboutdonation';
 import { Link } from 'react-router-dom';
+import CallToActionSection from '../components/CallToAction';
 
 
 export default function Home() {
@@ -14,30 +12,7 @@ export default function Home() {
       <nav className="bg-white shadow">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
-            {/* <div className="flex items-center">
-              <div className="flex-shrink-0 flex items-center">
-                <div className="w-8 h-8 rounded-full bg-red-600 mr-2"></div>
-                <span className="font-bold text-xl text-red-600">Red Hope</span>
-              </div>
-              <div className="hidden md:ml-10 md:flex md:space-x-8">
-                <Link to='/' className="border-b-2 border-red-500 text-gray-900 px-1 pt-5 pb-3 text-sm font-medium">
-                  Home
-                </Link>
-                <Link to='/search-donor' className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 px-1 pt-5 pb-3 text-sm font-medium">
-                  Find Donors
-                </Link>
-                <a href="donor" className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 px-1 pt-5 pb-3 text-sm font-medium">
-                  Become a Donor
-                </a>
-                <a href="about" className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 px-1 pt-5 pb-3 text-sm font-medium">
-                  About Us
-                </a>
-              </div>
-            </div> */}
-            {/* <div className="flex items-center gap-4">
-              <button variant="outline" className="hidden md:block">Log in</button>
-              <button className="bg-red-600 hover:bg-red-700 text-white">Sign up</button>
-            </div> */}
+          
           </div>
         </div>
       </nav>
@@ -77,7 +52,7 @@ export default function Home() {
       </div>
 
       {/* Search section */}
-      <div className="bg-white py-12">
+      {/* <div className="bg-white py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="shadow-lg rounded-lg p-6 bg-white">
             <h2 className="text-2xl font-bold mb-4 text-center">Find Blood Donors Near You</h2>
@@ -109,7 +84,7 @@ export default function Home() {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* Stats section */}
 
@@ -196,17 +171,7 @@ export default function Home() {
 
      
 
-      {/* CTA section */}
-      <div className="bg-red-600 py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-extrabold text-white">Ready to Make a Difference?</h2>
-          <p className="mt-4 text-xl text-red-100">Join our community of donors and help save lives today</p>
-          <div className="mt-8 flex justify-center gap-4">
-            <button className="bg-white text-red-600 hover:bg-red-50">Register as Donor</button>
-            <button variant="outline" className="text-white border-white hover:bg-red-700">Find Donors</button>
-          </div>
-        </div>
-      </div>
+     <CallToActionSection/>
 
 
 </div>

@@ -34,5 +34,13 @@ export const connectService= async (serviceData) => {
 };
 
 
-
-
+export const updateBloodRequest = async (serviceId, serviceData) => {
+    try {
+        console.log("Updating Service:", serviceId, serviceData);
+        const response = await axios.put(`${API_URL}/service/blood-request/${serviceId}`, serviceData);
+        return response.data;
+    } catch (error) {
+        console.error("Error updating donor status:", error.response?.data);
+        throw error.response?.data || { message: "Service update failed" };
+    }
+};

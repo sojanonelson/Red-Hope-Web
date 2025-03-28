@@ -1,88 +1,145 @@
-import React, { useEffect, useRef, useState } from "react";
-import QRCode from "qrcode-generator";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const PaymentScreen = () => {
-  const qrRef = useRef(null);
-  const [upiId, setUpiId] = useState("sojanonelson@okicic"); // Replace with dynamic UPI ID if needed
-  const [amount, setAmount] = useState(500); // Amount in ₹
-  const [transactionId, setTransactionId] = useState("TXN_" + Math.random().toString(36).substr(2, 9)); // Unique transaction ID
+  const navigate = useNavigate();
+  const [amount, setAmount] = useState(500);
+  const [donorName, setDonorName] = useState("");
+  const [impactMessage, setImpactMessage] = useState("");
 
-  // Generate UPI payment link
-  const generateUpiUrl = () => {
-    return `upi://pay?pa=${upiId}&pn=Sojan&mc=1234&tid=${transactionId}&tr=${transactionId}&tn=Payment+for+services&am=${amount}&cu=INR`;
+  // Psychological triggers: Social proof, impact visualization
+  const impactMessages = [
+    "Your donation could help save up to 3 lives!",
+    "Every ₹500 helps us reach 100 more potential donors",
+    "Join 10,000+ heroes who support our mission monthly",
+    "Blood shortages affect 1 in 4 patients - you can help change this"
+  ];
+
+  useEffect(() => {
+    // Rotate impact messages every 5 seconds
+    const interval = setInterval(() => {
+      const randomIndex = Math.floor(Math.random() * impactMessages.length);
+      setImpactMessage(impactMessages[randomIndex]);
+    }, 5000);
+    
+    // Set initial message
+    setImpactMessage(impactMessages[0]);
+    
+    return () => clearInterval(interval);
+  }, []);
+
+  const loadRazorpay = () => {
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.async = true;
+    script.onload = openRazorpay;
+    document.body.appendChild(script);
   };
 
-  // Generate QR code
-  useEffect(() => {
-    const upiUrl = generateUpiUrl();
-    const qr = QRCode(0, "L");
-    qr.addData(upiUrl);
-    qr.make();
-
-    if (qrRef.current) {
-      qrRef.current.innerHTML = qr.createSvgTag({ scalable: true });
-    }
-  }, [upiId, amount, transactionId]);
-
-  // Initiate payout using PhonePe API
-  const initiatePayout = async () => {
-    const payload = {
-      merchantId: "<MERCHANT_ID>", // Replace with your merchant ID
-      transactionId: transactionId,
-      amount: amount,
+  const openRazorpay = () => {
+    const options = {
+      key: process.env.REACT_APP_RAZOR_API,
+      amount: amount * 100,
       currency: "INR",
-      upiId: upiId,
+      name: "Red Hope",
+      description: "Supporting blood donation awareness",
+      image: "https://i.ibb.co/0yPYYzWP/logo.png", // Add your logo
+      handler: function (response) {
+        // Show appreciation and redirect
+        alert(`Thank you, ${donorName || 'hero'}! Your support will save lives.`);
+        navigate("/thank-you", { state: { donorName,amount  } }); 
+      },
+      prefill: {
+        name: donorName || "Blood Donor Hero",
+        email: "your.email@example.com",
+        contact: "9999999999",
+      },
+      theme: {
+        color: "#e63946", // Blood red color for psychological association
+      },
     };
-
-    try {
-      const response = await fetch("https://api.phonepe.com/payout/v1/initiate", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-VERIFY": "<SIGNATURE>", // Replace with your signature
-        },
-        body: JSON.stringify(payload),
-      });
-
-      const data = await response.json();
-      console.log("Payout Response:", data);
-
-      if (data.success) {
-        alert("Payment initiated successfully!");
-      } else {
-        alert("Payment failed. Please try again.");
-      }
-    } catch (error) {
-      console.error("Error initiating payout:", error);
-      alert("An error occurred. Please try again.");
-    }
+    const paymentObject = new window.Razorpay(options);
+    paymentObject.open();
   };
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
-      <h2 className="text-lg font-semibold mb-4">Scan QR Code to Pay</h2>
-      <div className="p-4 bg-white rounded-lg shadow-md">
-        <div ref={qrRef} />
-      </div>
+    <div className="min-h-screen bg-gradient-to-b from-red-50 to-white flex items-center justify-center p-4">
+      <div className="max-w-md w-full bg-white rounded-xl shadow-lg overflow-hidden">
+        {/* Hero section with emotional appeal */}
+        <div className="bg-red-600 p-6 text-white text-center">
+          <h1 className="text-3xl font-bold mb-2">Be a Lifesaver Today</h1>
+          <p className="opacity-90">{impactMessage}</p>
+        </div>
+        
+        
 
-      <div className="mt-6">
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          Enter Amount (₹):
-        </label>
-        <input
-          type="number"
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
-          className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-      </div>
+        <div className="p-6">
+          {/* Personalization increases commitment */}
+          <div className="mb-6">
+            <label className="block text-gray-700 text-sm font-medium mb-2">
+              Your Name (optional)
+            </label>
+            <input
+              type="text"
+              value={donorName}
+              onChange={(e) => setDonorName(e.target.value)}
+              placeholder="We'd love to thank you personally"
+              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+            />
+          </div>
 
-      <button
-        onClick={initiatePayout}
-        className="mt-4 bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition-colors"
-      >
-        Confirm Payment
-      </button>
+          {/* Anchoring effect with suggested amounts */}
+          <div className="mb-6">
+            <label className="block text-gray-700 text-sm font-medium mb-2">
+              Donation Amount (₹)
+            </label>
+            <div className="grid grid-cols-3 gap-3 mb-3">
+              {[200, 500, 1000].map((value) => (
+                <button
+                  key={value}
+                  onClick={() => setAmount(value)}
+                  className={`py-2 px-4 rounded-lg border ${
+                    amount === value
+                      ? "bg-red-100 border-red-500 text-red-700"
+                      : "border-gray-300 hover:bg-gray-50"
+                  }`}
+                >
+                  ₹{value}
+                </button>
+              ))}
+            </div>
+            <input
+              type="number"
+              min="100"
+              value={amount}
+              onChange={(e) => setAmount(Math.max(100, parseInt(e.target.value) || 100))}
+              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+            />
+          </div>
+
+          {/* Urgency and exclusivity */}
+          <div className="bg-red-50 border-l-4 border-red-500 p-4 mb-6 rounded">
+            <p className="text-sm text-red-700">
+              <span className="font-bold">Limited time:</span> Every donation this month 
+              will be matched 2x by our corporate partners!
+            </p>
+          </div>
+
+          {/* Primary CTA with strong visual hierarchy */}
+          <button
+            onClick={loadRazorpay}
+            className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-lg shadow-md transition duration-200 transform hover:scale-105"
+          >
+            Donate ₹{amount} & Save Lives
+          </button>
+
+          {/* Trust indicators */}
+          <div className="mt-6 text-center text-xs text-gray-500">
+            <p className="mb-2">Secure payment processed by Razorpay</p>
+           
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

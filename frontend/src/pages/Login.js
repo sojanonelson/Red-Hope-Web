@@ -30,7 +30,13 @@ export const LoginScreen = () => {
     try {
       const response = await loginUser(formData);
       console.log('Login successful:', response);
-      navigate('/LookingBlood');
+      if(response.user.role === "donor"){
+        navigate('/DonateBlood');
+      }else{
+        navigate('/LookingBlood');
+      }
+     
+     
     } catch (err) {
       console.error('Login error:', err);
       setError('Invalid email or password');

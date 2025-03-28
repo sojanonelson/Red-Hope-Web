@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { getUser } from '../services/userService';
-import { Bell } from 'lucide-react';
+
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [user, setUser] = useState(null);
-  const [hasNotifications, setHasNotifications] = useState(true); // Simulating notifications
+
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -26,6 +28,16 @@ const Navbar = () => {
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
+  };
+
+  const toggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('user');
+    localStorage.removeItem('token');
+    navigate('/login');
   };
 
   return (
@@ -68,14 +80,17 @@ const Navbar = () => {
             {/* Desktop Auth Buttons */}
             <div className="flex items-center gap-4">
               {user ? (
-                <div className="flex items-center space-x-4">
-                  <span className="text-gray-800 font-medium">{user.name}</span>
-                  <div className="relative">
-                    <Bell className="w-6 h-6 text-gray-800 hover:text-red-600 cursor-pointer" />
-                    {hasNotifications && (
-                      <span className="absolute top-0 right-0 block h-2 w-2 bg-red-600 rounded-full"></span>
-                    )}
-                  </div>
+                <div className="relative">
+                  <button onClick={toggleDropdown} className="text-gray-800 font-medium focus:outline-none">
+                    {user.name}
+                  </button>
+                  {isDropdownOpen && (
+                    <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 shadow-md rounded-md py-2">
+                      <button onClick={handleLogout} className="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-100">
+                        Logout
+                      </button>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <>

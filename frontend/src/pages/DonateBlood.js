@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { getAllServiceByDonorId } from "../services/bloodService";
-import { User, MapPin, Phone, Calendar, XCircle, Activity, UserCheck, Clock, Badge } from 'lucide-react';
+import { getAllServiceByDonorId, updateBloodRequest } from "../services/bloodService";
+import {  MapPin, Phone, Calendar, XCircle, Activity, UserCheck, Clock, CheckCircle, X } from 'lucide-react';
 
 const DonorServices = () => {
   const [services, setServices] = useState([]);
@@ -8,39 +8,52 @@ const DonorServices = () => {
   const [error, setError] = useState(null);
 
   const storedUser = JSON.parse(localStorage.getItem('user'));
-  const [donorUser, setUser] = useState(storedUser || {});
+  const [donorUser] = useState(storedUser || {});
 
   useEffect(() => {
-    const fetchServices = async () => {
-      if (donorUser.role === "donor") {
-        try {
-          const response = await getAllServiceByDonorId(donorUser._id);
-          setServices(response);
-          if (response.message) {
-            setError(response.message);
-          }
-        } catch (err) {
-          setError("Error fetching services");
-        } finally {
-          setLoading(false);
-        }
-      }
-    };
-
     fetchServices();
   }, [donorUser]);
 
-  // Helper function to get status color
+  const fetchServices = async () => {
+    if (donorUser.role === "donor") {
+      try {
+        const response = await getAllServiceByDonorId(donorUser._id);
+        setServices(response);
+        if (response.message) {
+          setError(response.message);
+        }
+      } catch (err) {
+        setError("Error fetching services");
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
+
+  const handleStatusUpdate = async (serviceId, newStatus) => {
+    try {
+      const response = await updateBloodRequest(serviceId, { donorStatus: newStatus, donorId: donorUser._id });
+      if (response.message === "Blood request updated successfully") {
+        setServices((prevServices) =>
+          prevServices.map((service) =>
+            service._id === serviceId ? { ...service, donorStatus: newStatus } : service
+          )
+        );
+      }
+    } catch (error) {
+      console.error("Failed to update status:", error);
+    }
+  };
+
   const getStatusColor = (status) => {
-    switch(status) {
-      case "completed": return "bg-green-100 text-green-800";
-      case "pending": return "bg-yellow-100 text-yellow-800";
-      case "cancelled": return "bg-red-100 text-red-800";
+    switch (status) {
+      case "Accepted": return "bg-green-100 text-green-800";
+      case "Pending": return "bg-yellow-100 text-yellow-800";
+      case "Declined": return "bg-red-100 text-red-800";
       default: return "bg-blue-100 text-blue-800";
     }
   };
 
-  // Helper function to format date
   const formatDate = (dateString) => {
     const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
     return new Date(dateString).toLocaleDateString(undefined, options);
@@ -67,7 +80,6 @@ const DonorServices = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-6">
       <div className="max-w-5xl mx-auto">
-        {/* Header */}
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
           <div className="flex items-center justify-between">
             <h2 className="text-2xl font-bold text-gray-800 flex items-center">
@@ -80,12 +92,10 @@ const DonorServices = () => {
           </div>
         </div>
         
-        {/* Services List */}
         {services.length > 0 ? (
           <div className="grid gap-6 md:grid-cols-2">
             {services.map((service) => (
               <div key={service._id} className="bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300 hover:shadow-lg border border-gray-100">
-                {/* Card Header */}
                 <div className="bg-red-600 px-6 py-4 text-white">
                   <div className="flex justify-between items-center">
                     <h3 className="font-medium text-lg truncate">
@@ -97,7 +107,6 @@ const DonorServices = () => {
                   </div>
                 </div>
                 
-                {/* Card Body */}
                 <div className="p-6">
                   <div className="space-y-4">
                     <div className="flex items-start">
@@ -131,25 +140,42 @@ const DonorServices = () => {
                         <p className="font-medium text-gray-800">{formatDate(service.date)}</p>
                       </div>
                     </div>
+
+                    <div className="flex items-start">
+                      <Clock className="w-5 h-5 mr-3 text-gray-600 mt-1" />
+                      <div>
+                        <p className="text-sm text-gray-500">Donor Status</p>
+                        <p className={`font-medium ${getStatusColor(service.donorStatus)}`}>
+                          {service.donorStatus}
+                        </p>
+                      </div>
+                    </div>
                   </div>
                 </div>
                 
-                {/* Card Footer */}
-                
+                {service.donorStatus === 'Declined' || service.donorStatus === 'Accepted' ? (null):( <div className="p-4 bg-gray-100 flex justify-between">
+                  <button 
+                    onClick={() => handleStatusUpdate(service._id, "Accepted")}
+                    className="px-4 py-2 bg-green-600 text-white rounded-md font-medium flex items-center hover:bg-green-700 transition"
+                  >
+                    <CheckCircle className="w-4 h-4 mr-2" /> Accept
+                  </button>
+
+                  <button 
+                    onClick={() => handleStatusUpdate(service._id, "Declined")}
+                    className="px-4 py-2 bg-red-600 text-white rounded-md font-medium flex items-center hover:bg-red-700 transition"
+                  >
+                    <X className="w-4 h-4 mr-2" /> Decline
+                  </button>
+                </div>)}
+               
+
+
               </div>
             ))}
           </div>
         ) : (
-          <div className="bg-white rounded-lg shadow-md p-12 text-center">
-            <div className="flex flex-col items-center justify-center">
-              <Badge className="w-16 h-16 text-gray-300 mb-4" />
-              <h3 className="text-xl font-semibold text-gray-800 mb-2">No Donations Yet</h3>
-              <p className="text-gray-600 mb-6 max-w-md mx-auto">You haven't made any blood donations yet. Start your journey of saving lives today.</p>
-              <button className="px-6 py-3 bg-red-600 text-white rounded-md font-medium hover:bg-red-700 transition-colors">
-                Schedule Your First Donation
-              </button>
-            </div>
-          </div>
+          <div>No Donations Yet</div>
         )}
       </div>
     </div>

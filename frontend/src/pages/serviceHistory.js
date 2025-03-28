@@ -6,33 +6,12 @@ import { connectService, getAllServiceByDonorId, getAllServiceByRecipientId } fr
 const ServiceHistory = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { donor } = location.state || {}; // Get donor details
-  const [connectModel, setConnectModel] = useState(false);
+  const { donor } = location.state || {};
   const storedUser = JSON.parse(localStorage.getItem('user'));
-  const [user, setUser] = useState(storedUser || {}); // Initialize user state with storedUser
-
-  // Mock service history data
+  const [user] = useState(storedUser || {});
+  const [connectModel, setConnectModel] = useState(!!donor);
   const [previousServices, setPreviousServices] = useState([]);
 
-  // Function to format date from "2025-03-21T17:58:02.796Z" to "DD-MM-YYYY"
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
-    const year = date.getFullYear();
-    return `${day}-${month}-${year}`;
-  };
-
-  // Set connectModel to true if donor is available
-  useEffect(() => {
-    if (donor) {
-      setConnectModel(true);
-    } else {
-      setConnectModel(false);
-    }
-  }, [donor]);
-
-  // Initialize formData with donor details (if available)
   const [formData, setFormData] = useState({
     donorId: donor?._id || '',
     userId: user?._id || '',
@@ -41,8 +20,8 @@ const ServiceHistory = () => {
     location: '',
   });
 
-  // Update formData when donor changes
   useEffect(() => {
+    setConnectModel(!!donor);
     if (donor) {
       setFormData((prevData) => ({
         ...prevData,
@@ -52,17 +31,13 @@ const ServiceHistory = () => {
     }
   }, [donor]);
 
-  // Fetch services based on user role
   useEffect(() => {
     const fetchServices = async () => {
       try {
-        if (user.role === 'donor') {
-          const donorService = await getAllServiceByDonorId(user._id);
-          setPreviousServices(donorService);
-        } else {
-          const recipientService = await getAllServiceByRecipientId(user._id);
-          setPreviousServices(recipientService);
-        }
+        const services = user.role === 'donor'
+          ? await getAllServiceByDonorId(user._id)
+          : await getAllServiceByRecipientId(user._id);
+        setPreviousServices(services);
       } catch (error) {
         console.error('Error fetching services:', error);
       }
@@ -71,7 +46,7 @@ const ServiceHistory = () => {
     if (user?._id) {
       fetchServices();
     }
-  }, [user?._id, user?.role]); // Dependencies
+  }, [user?._id, user?.role]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -81,7 +56,6 @@ const ServiceHistory = () => {
   const handleConnect = async () => {
     try {
       const connect = await connectService(formData);
-      console.log('Connect Res:', connect);
       if (connect) {
         navigate('/service-history');
       }
@@ -90,10 +64,16 @@ const ServiceHistory = () => {
     }
   };
 
-  // Handle three-dot button click
   const handleThreeDotClick = (serviceId) => {
     console.log('Three-dot button clicked for service:', serviceId);
-    // Add your logic here (e.g., open a dropdown menu, navigate to details, etc.)
+  };
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}-${month}-${year}`;
   };
 
   return (
@@ -105,26 +85,12 @@ const ServiceHistory = () => {
               <User className="w-6 h-6" /> Donor Details
             </h2>
             <div className="space-y-2 text-left">
-              <p>
-                <strong>Name:</strong> {donor.name}
-              </p>
-              <p>
-                <strong>Blood Type:</strong> {donor.bloodGroup}
-              </p>
-              <p>
-                <strong>Phone:</strong> {donor.phoneNumber}
-              </p>
-              <p>
-                <strong>Location:</strong> {donor.city}, {donor.state}
-              </p>
-              <p>
-                <strong>Donor Type:</strong> {donor.price ? `Paid` : 'Free'}
-              </p>
-              {donor?.price && (
-                <p>
-                  <strong>Payment Amount:</strong> ₹{donor.price}
-                </p>
-              )}
+              <p><strong>Name:</strong> {donor.name}</p>
+              <p><strong>Blood Type:</strong> {donor.bloodGroup}</p>
+              <p><strong>Phone:</strong> {donor.phoneNumber}</p>
+              <p><strong>Location:</strong> {donor.city}, {donor.state}</p>
+              <p><strong>Donor Type:</strong> {donor.price ? 'Paid' : 'Free'}</p>
+              {donor?.price && <p><strong>Payment Amount:</strong> ₹{donor.price}</p>}
             </div>
             <div className="mt-4">
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -169,7 +135,6 @@ const ServiceHistory = () => {
         </div>
       )}
 
-      {/* Service History Section */}
       <div className="mt-6">
         <h2 className="text-xl font-bold text-gray-800 mb-4">Service History</h2>
         <div className="bg-white p-4 rounded-lg shadow">
@@ -178,18 +143,19 @@ const ServiceHistory = () => {
               <div key={service.id} className="p-4 border border-gray-200 rounded-lg">
                 <div className="flex justify-between items-center">
                   <div>
-                    <p className="font-semibold">{service.donorName}</p>
+                  <p className="font-semibold">{service.donorName.toUpperCase()}</p>
                     <p className="text-sm text-gray-600">Place: {service.location}</p>
                     <p className="text-sm text-gray-600">Date: {formatDate(service.date)}</p>
-                    <p className="text-sm text-gray-600">Payment: {service.paymentStatus}</p>
+                    
                     <p className="text-sm text-gray-600">Donation: {service.donation}</p>
+                    {service.donorStatus !== 'Pending' && (
+                      <p className="text-sm text-gray-600">Donor status: {service.donorStatus}</p>
+                    )}
                   </div>
                   <div className="flex items-center gap-2">
                     <span
                       className={`px-2 py-1 text-sm rounded-full ${
-                        service.status === 'Completed'
-                          ? 'bg-green-100 text-green-800'
-                          : 'bg-red-100 text-red-800'
+                        service.status === 'Completed' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
                       }`}
                     >
                       {service.status}

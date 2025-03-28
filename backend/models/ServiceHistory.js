@@ -13,18 +13,15 @@ const ServiceHistorySchema = new mongoose.Schema({
   },
   donorName: {
     type: String,
-    
   },
-  recipientName:{
+  recipientName: {
     type: String,
-    
   },
-  recipientNumber:{
+  recipientNumber: {
     type: String,
-    
-  },donorNumber:{
+  },
+  donorNumber: {
     type: String,
-    
   },
   date: { type: Date, required: true },
   paymentStatus: {
@@ -35,6 +32,12 @@ const ServiceHistorySchema = new mongoose.Schema({
   donation: {
     type: String,
     enum: ["Done", "Cancelled", "Pending"],
+    default: "Pending",
+    required: true,
+  },
+  donorStatus: {
+    type: String,
+    enum: ["Accepted", "Declined", "Pending"],
     default: "Pending",
     required: true,
   },

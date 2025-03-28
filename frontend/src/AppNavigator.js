@@ -1,5 +1,5 @@
-import { BrowserRouter as Router, Routes, Route, useLocation, useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
 import Home from "./pages/Home";
 import SearchDonor from "./pages/SearchDonor";
 import BloodGroupSearch from "./pages/BloodGroupSearch";
@@ -11,6 +11,8 @@ import PaymentScreen from "./pages/TestPayment";
 import ServiceHistory from "./pages/serviceHistory";
 import DonateBlood from "./pages/DonateBlood";
 import About from "./pages/about";
+import DonationPopup from "./components/DonationPopup";
+import ThankYouPage from "./pages/ThankYou";
 
 // Notification service
 const NotificationService = {
@@ -88,9 +90,9 @@ function useNotifications() {
 
 function Layout() {
   const location = useLocation();
-  const navigate = useNavigate();
   const hideNavbarRoutes = ["/login", "/register"];
   const { requestPermission } = useNotifications();
+  const [showPopup, setShowPopup] = useState(true);
   
   // Optional: Show permission request banner if needed
   useEffect(() => {
@@ -123,13 +125,15 @@ function Layout() {
           </div>
         </div>
       )}
-      
+        {showPopup && <DonationPopup onClose={() => setShowPopup(false)} />}
       <Routes>
+    
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />
         <Route path="/login" element={<LoginScreen />} />
         <Route path="/register" element={<RegisterScreen />} />
-        <Route path="/test" element={<PaymentScreen />} />
+        <Route path="/donate" element={<PaymentScreen />} />
+        <Route path="/thank-you" element={<ThankYouPage />} />
         <Route path="/service-history" element={<ServiceHistory />} />
 
         
