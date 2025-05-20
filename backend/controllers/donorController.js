@@ -14,6 +14,39 @@ exports.getNotifications = async (req, res) => {
   };
 
 
+    exports.DonationStatus = async (req, res) => {
+        
+    const { id ,status} = req.body;
+    console.log("Req:",id)
+    console.log("Status:",status)
+   
+    try {
+        // Find the service history entry by ID
+        const serviceHistory = await ServiceHistory.findOne({ _id: id });
+
+        if (!serviceHistory) {
+            return res.status(404).json({ message: "Blood request not found" });
+        }
+
+        
+
+        // Validate and update donorStatus
+        if (status) {
+            if (!["Done", "Cancelled", "Pending"].includes(status)) {
+                return res.status(400).json({ message: "Invalid donor status" });
+            }
+            serviceHistory.donation = status;
+
+        }
+
+
+        await serviceHistory.save();
+        res.status(200).json({ message: "Donation status updated successfully", serviceHistory });
+
+    } catch (error) {
+        res.status(500).json({ message: "Error updating blood request", error: error.message });
+    }
+};
 
   exports.updateBloodRequest = async (req, res) => {
     const { requestId } = req.params;

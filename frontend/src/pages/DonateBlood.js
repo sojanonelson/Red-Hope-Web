@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { getAllServiceByDonorId, updateBloodRequest } from "../services/bloodService";
-import {  MapPin, Phone, Calendar, XCircle, Activity, UserCheck, Clock, CheckCircle, X } from 'lucide-react';
+import {  MapPin, Phone, Calendar, XCircle, Activity, UserCheck, Clock, CheckCircle, X, Heart, Bell, Info } from 'lucide-react';
 
 const DonorServices = () => {
   const [services, setServices] = useState([]);
@@ -66,14 +66,37 @@ const DonorServices = () => {
   );
 
   if (error) return (
-    <div className="min-h-screen flex items-center justify-center">
-      <div className="bg-red-50 border border-red-200 rounded-lg p-6 shadow-lg max-w-md">
-        <div className="flex items-center text-red-600 mb-4">
-          <XCircle className="w-8 h-8 mr-3" />
-          <h3 className="text-lg font-semibold">Error Loading Data</h3>
+       <div className="min-h-screen bg-gray-50 p-4">
+     
+      <div className="bg-white rounded-lg shadow-md p-4 mb-4">
+        <div className="flex justify-between items-center">
+          <div className="flex items-center">
+            <div className="h-12 w-12 rounded-full bg-red-100 flex items-center justify-center">
+              <Heart className="h-6 w-6 text-red-500" />
+            </div>
+            <div className="ml-3">
+              <h1 className="text-xl font-bold">Welcome, {donorUser.name}</h1>
+              <p className="text-gray-500 text-sm">Blood Type: {donorUser.bloodGroup}</p>
+            </div>
+          </div>
+          <Bell className="h-6 w-6 text-gray-400" />
         </div>
-        <p className="text-red-700">{error}</p>
       </div>
+ 
+      <div className="bg-white rounded-lg shadow-md p-6 mb-4">
+        <div className="flex items-center text-red-600 mb-4">
+          <Info className="w-6 h-6 mr-3" />
+          <h3 className="text-lg font-semibold">No Active Blood Requests</h3>
+        </div>
+        <p className="text-gray-600 mb-6">
+          There are currently no blood requests matching your blood type. We'll notify you when your donation is needed.
+        </p>
+      
+      </div>
+      
+     
+      
+     
     </div>
   );
 

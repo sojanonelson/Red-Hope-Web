@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { User, CheckCircle, X, MoreVertical } from 'lucide-react';
-import { connectService, getAllServiceByDonorId, getAllServiceByRecipientId } from '../services/bloodService';
+import { User, CheckCircle, X, MoreVertical, Phone, Calendar, MapPin, AlertCircle, Info } from 'lucide-react';
+import { connectService, getAllServiceByDonorId, getAllServiceByRecipientId, updateDonationStatus } from '../services/bloodService';
 
 const ServiceHistory = () => {
   const location = useLocation();
@@ -11,6 +11,7 @@ const ServiceHistory = () => {
   const [user] = useState(storedUser || {});
   const [connectModel, setConnectModel] = useState(!!donor);
   const [previousServices, setPreviousServices] = useState([]);
+  const [activeMenuId, setActiveMenuId] = useState(null); // Track which card's menu is open
 
   const [formData, setFormData] = useState({
     donorId: donor?._id || '',
@@ -48,6 +49,9 @@ const ServiceHistory = () => {
     }
   }, [user?._id, user?.role]);
 
+
+  
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
@@ -58,6 +62,7 @@ const ServiceHistory = () => {
       const connect = await connectService(formData);
       if (connect) {
         navigate('/service-history');
+        window.location.reload();
       }
     } catch (err) {
       console.error('Failed to connect:', err);
@@ -65,8 +70,33 @@ const ServiceHistory = () => {
   };
 
   const handleThreeDotClick = (serviceId) => {
-    console.log('Three-dot button clicked for service:', serviceId);
+    setActiveMenuId(activeMenuId === serviceId ? null : serviceId);
   };
+
+  const handleMarkAsCompleted = async (serviceId) => {
+    try {
+      const response = await updateDonationStatus({
+        id: serviceId,
+        status: "Done"
+      });
+      
+      if (response) {
+        // Update the local state to reflect the change
+        setPreviousServices(prevServices => 
+          prevServices.map(service => 
+            service.id === serviceId 
+              ? { ...service, status: 'Done', donorStatus: 'Accepted' } 
+              : service
+          )
+        );
+        setActiveMenuId(null); // Close the menu
+      }
+    } catch (error) {
+      console.error('Error updating donation status:', error);
+    }
+  };
+
+  console.log("data:", previousServices)
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -74,6 +104,34 @@ const ServiceHistory = () => {
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const year = date.getFullYear();
     return `${day}-${month}-${year}`;
+  };
+
+  const getStatusInfo = (service) => {
+    if (service.donorStatus === 'Accepted' || service.status === 'Completed') {
+      return {
+        borderColor: 'border-green-500',
+        statusBg: 'bg-green-100',
+        statusText: 'text-green-800',
+        icon: <CheckCircle className="w-5 h-5 text-green-500" />,
+        message: "The donor has accepted your request and will contact you soon."
+      };
+    } else if (service.donorStatus === 'Declined') {
+      return {
+        borderColor: 'border-red-500',
+        statusBg: 'bg-red-100',
+        statusText: 'text-red-800',
+        icon: <X className="w-5 h-5 text-red-500" />,
+        message: "The donor has declined your request. Please try contacting other donors."
+      };
+    } else {
+      return {
+        borderColor: 'border-yellow-500',
+        statusBg: 'bg-yellow-100',
+        statusText: 'text-yellow-800',
+        icon: <AlertCircle className="w-5 h-5 text-yellow-500" />,
+        message: "Waiting for donor to accept your request."
+      };
+    }
   };
 
   return (
@@ -138,40 +196,79 @@ const ServiceHistory = () => {
       <div className="mt-6">
         <h2 className="text-xl font-bold text-gray-800 mb-4">Service History</h2>
         <div className="bg-white p-4 rounded-lg shadow">
-          <div className="space-y-3">
-            {previousServices.map((service) => (
-              <div key={service.id} className="p-4 border border-gray-200 rounded-lg">
-                <div className="flex justify-between items-center">
-                  <div>
-                  <p className="font-semibold">{service.donorName.toUpperCase()}</p>
-                    <p className="text-sm text-gray-600">Place: {service.location}</p>
-                    <p className="text-sm text-gray-600">Date: {formatDate(service.date)}</p>
+          {previousServices.length === 0 ? (
+            <div className="text-center py-8 text-gray-500">
+              <Info className="w-8 h-8 mx-auto mb-2" />
+              <p>No service history available yet.</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {previousServices.map((service) => {
+                const statusInfo = getStatusInfo(service);
+                
+                return (
+                  <div 
+                    key={service.id} 
+                    className={`p-4 border-2 ${statusInfo.borderColor} rounded-lg transition-all duration-300 hover:shadow-md relative`}
+                  >
+                    <div className="flex justify-between items-center">
+                      <div className="flex-1">
+                        <p className="font-semibold text-gray-800">{service.donorName.toUpperCase()}</p>
+                        <div className="flex items-center text-gray-600 mt-1">
+                          <MapPin className="w-4 h-4 mr-1" />
+                          <p className="text-sm">{service.location}</p>
+                        </div>
+                        <div className="flex items-center text-gray-600 mt-1">
+                          <Calendar className="w-4 h-4 mr-1" />
+                          <p className="text-sm">{formatDate(service.date)}</p>
+                        </div>
+                        <p className="text-sm text-gray-600 mt-1">Donation: {service.donation}</p>
+                      </div>
+                      <div className="flex flex-col items-end gap-2">
+                        <span
+                          className={`px-3 py-1 text-sm rounded-full flex items-center ${statusInfo.statusBg} ${statusInfo.statusText}`}
+                        >
+                          {statusInfo.icon}
+                          <span className="ml-1">{service.status}</span>
+                        </span>
+                        <button
+                          onClick={() => handleThreeDotClick(service.id)}
+                          className="p-1 hover:bg-gray-200 rounded-full"
+                        >
+                          <MoreVertical className="w-5 h-5 text-gray-600" />
+                        </button>
+                      </div>
+                    </div>
                     
-                    <p className="text-sm text-gray-600">Donation: {service.donation}</p>
-                    {service.donorStatus !== 'Pending' && (
-                      <p className="text-sm text-gray-600">Donor status: {service.donorStatus}</p>
+                    {/* Dropdown menu that appears when three dots are clicked */}
+                    {activeMenuId === service.id && (
+                      <div className="absolute right-4 top-16 bg-white shadow-lg rounded-md border border-gray-200 z-10">
+                        {service.donation !== 'Done' && (
+                          <button
+                            onClick={() => handleMarkAsCompleted(service._id)}
+                            className="w-full text-left px-4 py-2 text-sm text-green-600 hover:bg-green-50 flex items-center gap-2"
+                          >
+                            <CheckCircle className="w-4 h-4" />
+                            Mark as Completed
+                          </button>
+                        )}
+                      </div>
+                    )}
+                    
+                    {/* Status information message */}
+                    <div className={`mt-3 p-3 rounded-md flex items-center ${statusInfo.statusBg} ${statusInfo.statusText} bg-opacity-50`}>
+                      <Info className="w-4 h-4 mr-2 flex-shrink-0" />
+                      <p className="text-sm">{statusInfo.message}</p>
+                    </div>
+                    
+                    {service.details && (
+                      <p className="text-sm text-gray-600 mt-3 border-t pt-2">{service.details}</p>
                     )}
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span
-                      className={`px-2 py-1 text-sm rounded-full ${
-                        service.status === 'Completed' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                      }`}
-                    >
-                      {service.status}
-                    </span>
-                    <button
-                      onClick={() => handleThreeDotClick(service.id)}
-                      className="p-1 hover:bg-gray-200 rounded-full"
-                    >
-                      <MoreVertical className="w-5 h-5 text-gray-600" />
-                    </button>
-                  </div>
-                </div>
-                <p className="text-sm text-gray-600 mt-2">{service.details}</p>
-              </div>
-            ))}
-          </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       </div>
     </div>

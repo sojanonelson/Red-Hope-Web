@@ -23,6 +23,16 @@ export const getAllServiceByRecipientId= async (recipientId) => {
     }
 };
 
+export const updateDonationStatus= async (data) => {
+    try {
+        console.log("service id:",data)
+        const response = await axios.put(`${API_URL}/service/donation-status`, data);
+        return response.data;
+    } catch (error) {
+        throw error.response?.data || { message: "Get service by ID failed" };
+    }
+};
+
 export const connectService= async (serviceData) => {
     try {
         console.log("Service", serviceData)

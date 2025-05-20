@@ -91,7 +91,7 @@ const BloodDonorList = () => {
             <Search className="absolute left-3 top-3 w-4 h-4 text-gray-500" />
           </div>
 
-          <div className="relative">
+          {/* <div className="relative">
             <select
               name="type"
               value={filters.type}
@@ -103,7 +103,7 @@ const BloodDonorList = () => {
               <option value="paid">Paid</option>
             </select>
             <IndianRupee className="absolute left-3 top-3 w-4 h-4 text-gray-500" />
-          </div>
+          </div> */}
         </div>
 
         <div className="space-y-4">
