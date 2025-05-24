@@ -5,7 +5,7 @@ const UserSchema = new mongoose.Schema({
   email: { type: String, unique: true, required: true },
   password: { type: String, required: true },
   
-  profilePicture: { type: String, default: 'https://st.depositphotos.com/1008939/2240/i/450/depositphotos_22408839-stock-photo-serious.jpg' }, // Store image URL
+  profilePicture: { type: String, default: 'https://st.depositphotos.com/1008939/2240/i/450/depositphotos_22408839-stock-photo-serious.jpg' },
   phoneNumber: { type: String, required: true },
   alternatePhoneNumber: { type: String },
   aadharNumber: { type: String},

@@ -13,6 +13,7 @@ import DonateBlood from "./pages/DonateBlood";
 import About from "./pages/about";
 import DonationPopup from "./components/DonationPopup";
 import ThankYouPage from "./pages/ThankYou";
+import Profile from "./pages/Profile";
 
 // Notification service
 const NotificationService = {
@@ -129,6 +130,7 @@ function Layout() {
       <Routes>
     
         <Route path="/" element={<Home />} />
+          <Route path="/my-account" element={<Profile />} />
         <Route path="/about" element={<About />} />
         <Route path="/login" element={<LoginScreen />} />
         <Route path="/register" element={<RegisterScreen />} />

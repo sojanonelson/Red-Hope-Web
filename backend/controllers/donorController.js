@@ -2,6 +2,8 @@ const User = require("../models/User");
 
 const ServiceHistory = require("../models/ServiceHistory");
 
+const { sendDonationConfirmation } = require("./mailController");
+
 exports.getNotifications = async (req, res) => {
     const userId = req.user._id;
   
@@ -55,6 +57,8 @@ exports.getNotifications = async (req, res) => {
     try {
         // Find the service history entry by ID
         const serviceHistory = await ServiceHistory.findOne({ _id: requestId });
+        const donorInfo = await User.findById(donorId).select('-password');
+        const recipientInfo = await User.findById(serviceHistory.userId).select('-password');
 
         if (!serviceHistory) {
             return res.status(404).json({ message: "Blood request not found" });
@@ -85,8 +89,9 @@ exports.getNotifications = async (req, res) => {
             }
             serviceHistory.donation = donation;
         }
-
+        await sendDonationConfirmation(recipientInfo.email,donorInfo.name,recipientInfo.name,serviceHistory.date,serviceHistory.location);
         await serviceHistory.save();
+        
         res.status(200).json({ message: "Blood request updated successfully", serviceHistory });
 
     } catch (error) {

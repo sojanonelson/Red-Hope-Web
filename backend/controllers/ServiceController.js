@@ -1,10 +1,15 @@
 const ServiceHistory = require("../models/ServiceHistory");
 const Notification = require("../models/Notification");
 const Donor = require("../models/User");
+const { sendDonationRequest } = require("./mailController");
+const User = require("../models/User");
 
 exports.createServiceHistory = async (req, res) => {
     try {
       const { donorId, userId, paymentStatus, location, selectedDate } = req.body;
+      const donorInfo = await User.findById(donorId).select('-password');
+      const recipientInfo = await User.findById(userId).select('-password');
+      // console.log("Donor Email:", user)
   
       // Validate required fields
       if (!donorId || !userId || !location || !selectedDate) {
@@ -20,6 +25,8 @@ exports.createServiceHistory = async (req, res) => {
       if (!userData) {
         return res.status(404).json({ error: "Donor not found" });
       }
+      
+
   
       // Create service history
       const serviceHistory = new ServiceHistory({
@@ -35,6 +42,7 @@ exports.createServiceHistory = async (req, res) => {
       });
   
       await serviceHistory.save();
+      sendDonationRequest(donorInfo.email,recipientInfo.name,donorInfo.name,donorInfo.bloodGroup,location,selectedDate)
   
       // Create notification for the donor
       const notification = new Notification({
@@ -90,7 +98,7 @@ exports.getAllSericeByRecipientId= async (req, res) => {
         
       const { recipientId } = req.params;
       const userId = recipientId
-      console.log("R:",recipientId)
+      
       if (!userId) {
         return res.status(400).json({ error: "Donor ID is required" });
       }

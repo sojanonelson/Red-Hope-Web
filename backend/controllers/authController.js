@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 // Register Donor
 exports.registerDonor = async (req, res) => {
   try {
-    const { name, status, email, password,phone,pincode ,bloodGroup, state,adharnumber,upiID, city,price } = req.body;
+    const { name, status, email, password,phone,pincode ,bloodGroup, state,adharNumber,upiID, city,price } = req.body;
 
     // Validate required fields
     if (!bloodGroup ) {
@@ -32,7 +32,7 @@ exports.registerDonor = async (req, res) => {
       city,
       pincode,
       role: 'donor', // Set role as donor
-      aadharNumber:adharnumber,
+      aadharNumber:adharNumber,
       phoneNumber:phone,
       upi:upiID,
       price,
@@ -53,7 +53,7 @@ exports.registerDonor = async (req, res) => {
 // Register Recipient
 exports.registerRecipient = async (req, res) => {
   try {
-    const { name, email, password, state, city,phone,pincode,adharnumber } = req.body;
+    const { name, email, password, state,upiId, city,phone,pincode,adharNumber } = req.body;
 
     // Check if user already exists
     let user = await User.findOne({ email });
@@ -73,9 +73,11 @@ exports.registerRecipient = async (req, res) => {
       state,
       pincode,
       phoneNumber:phone,
+       aadharNumber:adharNumber,
+       upi:upiId,
+      
       city,
      
-      aadharNumber:adharnumber,
       role: 'recipient' // Set role as recipient
     });
 
