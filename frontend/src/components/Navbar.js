@@ -95,12 +95,7 @@ const Navbar = () => {
             <div className="flex items-center gap-4">
               {user ? (
                 <div className="relative space-x-8">
-                  <button
-                    onClick={toggleDropdown}
-                    className="text-gray-800 font-medium focus:outline-none"
-                  >
-                    Notification
-                  </button>
+                  
                   <button
                     onClick={toggleDropdown}
                     className="text-gray-800 font-medium focus:outline-none"
