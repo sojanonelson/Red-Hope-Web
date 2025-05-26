@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { registerDonor, registerRecipient } from '../services/authService';
+import { Eye, EyeOff } from 'lucide-react';
 
 export const RegisterScreen = () => {
   const navigate = useNavigate();
@@ -8,7 +9,9 @@ export const RegisterScreen = () => {
   const userType = location.state?.userType || 'default';
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -20,7 +23,7 @@ export const RegisterScreen = () => {
     state: '',
     pincode: '',
     upiId: '',
-    status:'available',
+    status: 'available',
     adharNumber: '',
     role: ''
   });
@@ -30,26 +33,57 @@ export const RegisterScreen = () => {
     setFormData({ ...formData, [name]: value });
   };
 
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const toggleConfirmPasswordVisibility = () => {
+    setShowConfirmPassword(!showConfirmPassword);
+  };
+
+  const validatePassword = (password) => {
+    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+    const isLongEnough = password.length >= 6;
+    return hasSpecialChar && isLongEnough;
+  };
+
+  const validateEmail = (email) => {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     setError('');
-    
+
     if (formData.password !== formData.confirmPassword) {
       setError('Passwords do not match');
       setIsLoading(false);
       return;
     }
-    
+
+    if (!validatePassword(formData.password)) {
+      setError('Password must be at least 6 characters long and contain at least one special character');
+      setIsLoading(false);
+      return;
+    }
+
+    if (!validateEmail(formData.email)) {
+      setError('Please enter a valid email address');
+      setIsLoading(false);
+      return;
+    }
+
     try {
       if (formData.role === 'donor') {
         const response = await registerDonor(formData);
-        if(response) {
+        if (response) {
           navigate('/login');
         }
       } else if (formData.role === 'recipient') {
         const response = await registerRecipient(formData);
-        if(response) {
+        if (response) {
           navigate('/login');
         }
       } else {
@@ -62,7 +96,7 @@ export const RegisterScreen = () => {
       setIsLoading(false);
     }
   };
-  
+
   useEffect(() => {
     if (userType === 'donor' || userType === 'recipient') {
       setFormData((prev) => ({ ...prev, role: userType }));
@@ -77,15 +111,15 @@ export const RegisterScreen = () => {
         </h2>
         <h3 className="mt-1 text-center text-xl font-bold text-gray-900">Create your account</h3>
       </div>
-      
+
       <div className="mt-4 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-6 px-4 shadow sm:rounded-lg sm:px-6">
           {!formData.role ? (
             <div className="mb-4">
               <h3 className="text-lg font-medium mb-3 text-center">Select your role:</h3>
               <div className="grid grid-cols-2 gap-4">
-                <button 
-                  onClick={() => setFormData({...formData, role: 'donor'})}
+                <button
+                  onClick={() => setFormData({ ...formData, role: 'donor' })}
                   className="p-4 border-2 border-red-200 rounded-lg hover:bg-red-50 flex flex-col items-center transition-colors"
                 >
                   <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center mb-2">
@@ -93,9 +127,9 @@ export const RegisterScreen = () => {
                   </div>
                   <span className="font-medium text-sm">I want to donate</span>
                 </button>
-                
-                <button 
-                  onClick={() => setFormData({...formData, role: 'recipient'})}
+
+                <button
+                  onClick={() => setFormData({ ...formData, role: 'recipient' })}
                   className="p-4 border-2 border-red-200 rounded-lg hover:bg-red-50 flex flex-col items-center transition-colors"
                 >
                   <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center mb-2">
@@ -111,157 +145,180 @@ export const RegisterScreen = () => {
                 <h3 className="text-base font-medium">
                   {formData.role === 'donor' ? 'Donor Registration' : 'Recipient Registration'}
                 </h3>
-                <button 
+                <button
                   type="button"
-                  onClick={() => setFormData({...formData, role: ''})}
+                  onClick={() => setFormData({ ...formData, role: '' })}
                   className="text-xs text-red-600 hover:text-red-800"
                 >
                   Change role
                 </button>
               </div>
-              
+
               {error && <div className="bg-red-50 border border-red-200 text-red-600 px-3 py-2 rounded text-sm">{error}</div>}
-              
+
               <div className="space-y-4">
                 {/* Personal Information */}
                 <div className="bg-gray-50 p-3 rounded-md border border-gray-200">
                   <h4 className="text-xs font-medium text-gray-700 mb-2">Personal Information</h4>
-                  
+
                   <div className="mb-2">
                     <label htmlFor="name" className="block text-xs font-medium text-gray-700 mb-1">Full Name</label>
-                    <input 
+                    <input
                       id="name"
-                      name="name" 
+                      name="name"
                       type="text"
-                      value={formData.name} 
-                      onChange={handleChange} 
-                      required 
-                      className="w-full p-2 text-sm border rounded-md focus:ring-red-500 focus:border-red-500" 
+                      value={formData.name}
+                      onChange={handleChange}
+                      required
+                      className="w-full p-2 text-sm border rounded-md focus:ring-red-500 focus:border-red-500"
                     />
                   </div>
-                  
+
                   <div className="grid grid-cols-2 gap-2 mb-2">
                     <div>
                       <label htmlFor="email" className="block text-xs font-medium text-gray-700 mb-1">Email</label>
-                      <input 
+                      <input
                         id="email"
-                        name="email" 
+                        name="email"
                         type="email"
-                        value={formData.email} 
-                        onChange={handleChange} 
-                        required 
-                        className="w-full p-2 text-sm border rounded-md focus:ring-red-500 focus:border-red-500" 
+                        value={formData.email}
+                        onChange={handleChange}
+                        required
+                        className="w-full p-2 text-sm border rounded-md focus:ring-red-500 focus:border-red-500"
                       />
                     </div>
-                    
+
                     <div>
                       <label htmlFor="phone" className="block text-xs font-medium text-gray-700 mb-1">Phone</label>
-                      <input 
+                      <input
                         id="phone"
-                        name="phone" 
+                        name="phone"
                         type="tel"
-                        value={formData.phone} 
-                        onChange={handleChange} 
-                        required 
-                        className="w-full p-2 text-sm border rounded-md focus:ring-red-500 focus:border-red-500" 
+                        value={formData.phone}
+                        onChange={handleChange}
+                        required
+                        className="w-full p-2 text-sm border rounded-md focus:ring-red-500 focus:border-red-500"
                       />
                     </div>
                   </div>
-                  
+
                   <div>
                     <label htmlFor="adharNumber" className="block text-xs font-medium text-gray-700 mb-1">Aadhar Number</label>
-                    <input 
+                    <input
                       id="adharNumber"
-                      name="adharNumber" 
+                      name="adharNumber"
                       type="number"
-                      value={formData.adharNumber} 
-                      onChange={handleChange} 
-                      required 
-                      className="w-full p-2 text-sm border rounded-md focus:ring-red-500 focus:border-red-500" 
+                      value={formData.adharNumber}
+                      onChange={handleChange}
+                      required
+                      className="w-full p-2 text-sm border rounded-md focus:ring-red-500 focus:border-red-500"
                     />
                   </div>
                 </div>
-                
+
                 {/* Security & Location (Combined) */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {/* Password Section */}
                   <div className="bg-gray-50 p-3 rounded-md border border-gray-200">
                     <h4 className="text-xs font-medium text-gray-700 mb-2">Security</h4>
-                    
-                    <div className="mb-2">
+
+                    <div className="mb-2 relative">
                       <label htmlFor="password" className="block text-xs font-medium text-gray-700 mb-1">Password</label>
-                      <input 
+                      <input
                         id="password"
-                        name="password" 
-                        type="password"
-                        value={formData.password} 
-                        onChange={handleChange} 
-                        required 
-                        className="w-full p-2 text-sm border rounded-md focus:ring-red-500 focus:border-red-500" 
+                        name="password"
+                        type={showPassword ? "text" : "password"}
+                        value={formData.password}
+                        onChange={handleChange}
+                        required
+                        className="w-full p-2 text-sm border rounded-md focus:ring-red-500 focus:border-red-500"
                       />
+                      <button
+                        type="button"
+                        onClick={togglePasswordVisibility}
+                        className="absolute inset-y-0 top-6 right-0 pr-3 flex items-center"
+                      >
+                        {showPassword ? (
+                          <EyeOff className="h-5 w-5 text-gray-500" />
+                        ) : (
+                          <Eye className="h-5 w-5 text-gray-500" />
+                        )}
+                      </button>
                     </div>
-                    
-                    <div>
+
+                    <div className="relative">
                       <label htmlFor="confirmPassword" className="block text-xs font-medium text-gray-700 mb-1">Confirm Password</label>
-                      <input 
+                      <input
                         id="confirmPassword"
-                        name="confirmPassword" 
-                        type="password"
-                        value={formData.confirmPassword} 
-                        onChange={handleChange} 
-                        required 
-                        className="w-full p-2 text-sm border rounded-md focus:ring-red-500 focus:border-red-500" 
+                        name="confirmPassword"
+                        type={showConfirmPassword ? "text" : "password"}
+                        value={formData.confirmPassword}
+                        onChange={handleChange}
+                        required
+                        className="w-full p-2 text-sm border rounded-md focus:ring-red-500 focus:border-red-500"
                       />
+                      <butto n
+                        type="button"
+                        onClick={toggleConfirmPasswordVisibility}
+                        className="absolute inset-y-0 top-6 right-0 pr-3 flex items-center"
+                      >
+                        {showConfirmPassword ? (
+                          <EyeOff className="h-5 w-5 text-gray-500" />
+                        ) : (
+                          <Eye className="h-5 w-5 text-gray-500" />
+                        )}
+                      </butto>
                     </div>
+                    <p className="text-xs text-gray-500 mt-1">Password must be at least 6 characters long and contain at least one special character</p>
                   </div>
-                  
+
                   {/* Location Section */}
                   <div className="bg-gray-50 p-3 rounded-md border border-gray-200">
                     <h4 className="text-xs font-medium text-gray-700 mb-2">Location</h4>
-                    
+
                     <div className="grid grid-cols-2 gap-2 mb-2">
                       <div>
                         <label htmlFor="city" className="block text-xs font-medium text-gray-700 mb-1">City</label>
-                        <input 
+                        <input
                           id="city"
-                          name="city" 
+                          name="city"
                           type="text"
-                          value={formData.city} 
-                          onChange={handleChange} 
-                          required 
-                          className="w-full p-2 text-sm border rounded-md focus:ring-red-500 focus:border-red-500" 
+                          value={formData.city}
+                          onChange={handleChange}
+                          required
+                          className="w-full p-2 text-sm border rounded-md focus:ring-red-500 focus:border-red-500"
                         />
                       </div>
-                      
+
                       <div>
                         <label htmlFor="state" className="block text-xs font-medium text-gray-700 mb-1">State</label>
-                        <input 
+                        <input
                           id="state"
-                          name="state" 
+                          name="state"
                           type="text"
-                          value={formData.state} 
-                          onChange={handleChange} 
-                          required 
-                          className="w-full p-2 text-sm border rounded-md focus:ring-red-500 focus:border-red-500" 
+                          value={formData.state}
+                          onChange={handleChange}
+                          required
+                          className="w-full p-2 text-sm border rounded-md focus:ring-red-500 focus:border-red-500"
                         />
                       </div>
                     </div>
-                    
+
                     <div>
                       <label htmlFor="pincode" className="block text-xs font-medium text-gray-700 mb-1">Pincode</label>
-                      <input 
+                      <input
                         id="pincode"
-                        name="pincode" 
+                        name="pincode"
                         type="text"
-                        value={formData.pincode} 
-                        onChange={handleChange} 
-                        required 
-                        className="w-full p-2 text-sm border rounded-md focus:ring-red-500 focus:border-red-500" 
+                        value={formData.pincode}
+                        onChange={handleChange}
+                        required
+                        className="w-full p-2 text-sm border rounded-md focus:ring-red-500 focus:border-red-500"
                       />
                     </div>
                   </div>
                 </div>
-                
+
                 {/* Donor-specific Information */}
                 {formData.role === 'donor' && (
                   <div className="bg-gray-50 p-3 rounded-md border border-gray-200">
@@ -269,12 +326,12 @@ export const RegisterScreen = () => {
                     <div className="grid grid-cols-2 gap-2">
                       <div>
                         <label htmlFor="bloodType" className="block text-xs font-medium text-gray-700 mb-1">Blood Type</label>
-                        <select 
+                        <select
                           id="bloodGroup"
-                          name="bloodGroup" 
-                          value={formData.bloodGroup} 
-                          onChange={handleChange} 
-                          required 
+                          name="bloodGroup"
+                          value={formData.bloodGroup}
+                          onChange={handleChange}
+                          required
                           className="w-full p-2 text-sm border rounded-md focus:ring-red-500 focus:border-red-500"
                         >
                           <option value="">Select Type</option>
@@ -288,17 +345,17 @@ export const RegisterScreen = () => {
                           <option value="O-">O-</option>
                         </select>
                       </div>
-                      
+
                       <div>
                         <label htmlFor="upiId" className="block text-xs font-medium text-gray-700 mb-1">UPI ID</label>
-                        <input 
+                        <input
                           id="upiId"
-                          name="upiId" 
+                          name="upiId"
                           type="text"
-                          value={formData.upiId} 
-                          onChange={handleChange} 
-                          required 
-                          className="w-full p-2 text-sm border rounded-md focus:ring-red-500 focus:border-red-500" 
+                          value={formData.upiId}
+                          onChange={handleChange}
+                          required
+                          className="w-full p-2 text-sm border rounded-md focus:ring-red-500 focus:border-red-500"
                         />
                       </div>
                     </div>
@@ -313,8 +370,8 @@ export const RegisterScreen = () => {
                 </label>
               </div>
 
-              <button 
-                type="submit" 
+              <button
+                type="submit"
                 className="w-full p-2 bg-red-600 text-white text-sm rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 flex justify-center items-center"
                 disabled={isLoading}
               >

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { loginUser } from '../services/authService'; // Ensure this path is correct
+import { Eye, EyeOff } from 'lucide-react';
 
 export const LoginScreen = () => {
   const [formData, setFormData] = useState({
@@ -11,6 +12,7 @@ export const LoginScreen = () => {
 
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -20,11 +22,15 @@ export const LoginScreen = () => {
     });
   };
 
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setIsLoading(true); // Start loading animation
-   
+
     console.log('Form Data:', formData);
 
     try {
@@ -35,8 +41,7 @@ export const LoginScreen = () => {
       }else{
         navigate('/LookingBlood');
       }
-     
-     
+
     } catch (err) {
       console.error('Login error:', err);
       setError('Invalid email or password');
@@ -59,7 +64,7 @@ export const LoginScreen = () => {
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
           <form className="space-y-6" onSubmit={handleSubmit}>
             {error && <p className="text-red-500 text-sm">{error}</p>}
-            
+
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700">
                 Email address
@@ -82,17 +87,28 @@ export const LoginScreen = () => {
               <label htmlFor="password" className="block text-sm font-medium text-gray-700">
                 Password
               </label>
-              <div className="mt-1">
+              <div className="mt-1 relative">
                 <input
                   id="password"
                   name="password"
-                  type="text"
+                  type={showPassword ? "text" : "password"}
                   autoComplete="current-password"
                   required
                   value={formData.password}
                   onChange={handleChange}
                   className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-red-500 focus:border-red-500"
                 />
+                <button
+                  type="button"
+                  onClick={togglePasswordVisibility}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-5 w-5 text-gray-500" />
+                  ) : (
+                    <Eye className="h-5 w-5 text-gray-500" />
+                  )}
+                </button>
               </div>
             </div>
 
@@ -116,7 +132,7 @@ export const LoginScreen = () => {
               </button>
             </div>
           </form>
-          
+
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-600">
               Don't have an account?{' '}
